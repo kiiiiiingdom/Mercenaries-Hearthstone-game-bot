@@ -83,7 +83,6 @@ def filepp(name,strname):
         while i<len(name):
             name[i] = strname + "/" + name[i] + ".png"
             i+=1
-        print(strname, "file list is ready")
     except:
         print(strname, "file list got error")
 
@@ -92,9 +91,11 @@ def parslist():
     filepp(buttons,"Buttons")
     filepp(chekers,"Chekers")
     filepp(levels,"Levels")
-    filepp(hero,"Hero")
+    i = 0
+    while i < len(hero):
+        hero[i] = "heroes/" + hero[i]
+        i += 1
     return 0
-
 
 def screen():
     global Resolution
@@ -251,6 +252,7 @@ def abilicks(index):
 
 
 def atack(i, enemyred, enemygreen, enemyblue, enemynoclass, mol):
+    print(" i list:",i)
     x = int(i[1])
     y = int(i[2])
     if i[0] == 'Red':
@@ -290,7 +292,7 @@ def battle():
     raund = 1
     while True:
         speed = 0
-        if find_ellement(chekers[13],1):
+        if find_ellement(chekers[13],1):#win
             ahk.mouse_move(win.rect[2] / 2, win.rect[3]-300,speed=3)
             while not find_ellement(Ui_Ellements[18],1):
                 ahk.click()
@@ -327,7 +329,7 @@ def battle():
             speed = temp
             i=0
             while True:
-                if not find_ellement(buttons[14], 2):
+                if not find_ellement(buttons[14], 2):#find ready button
                     break
                 if i>10:
                     ahk.show_warning_traytip("Battle", "Battle error,please write what happend on github issue")
@@ -392,7 +394,7 @@ def battlego():
             break
     while True:
         if find_ellement(buttons[7], 0):
-            time.sleep(0.5)
+            time.sleep(1)
             break
         else:
             find_ellement(buttons[13], 2)
@@ -430,9 +432,7 @@ def find(n):
             for index in range(4):
                 if find_ellement(hero[n] + picparser[index], 6):
                     find_ellement(chekers[8], 0)
-                    #to find the "drop"
                     heroNUM[n] = picparser[index]
-                    #hero list(was empty) insert one lv30 hero
                     return True
         page = pagech(page, n)
 
@@ -595,16 +595,17 @@ def find_ellement(file, index):
             xm = x
             ym = y
             return True
+        time.sleep(1.5)
         ahk.mouse_move(x, y, speed=5)  # Moves the mouse instantly to absolute screen position
         ahk.click()  # Click the primary mouse button
         if file == buttons[7]:
             return True
         if file == Ui_Ellements[3]:
-            time.sleep(0.5)
+            time.sleep(1.5)
             ahk.click()
             group_create()
     else:
-        print("Not found  " + file)
+        #print("Not found  " + file)
         if index == 12:
             return 0, 0
         if index == 6:
@@ -624,30 +625,29 @@ def find_ellement(file, index):
 
 
 def main():
-    # try:
-    ahk.show_info_traytip("Starting", "loading files",second = 1,  slient=False, blocking=True)
-    configread()
-    parslist()    
-    ahk.show_info_traytip("started", "All files loaded successfully",second = 2,  slient=False, blocking=True)
-    findgame()
-    win.show()
-    win.restore()
-    win.maximize()
-    win.to_top()
-    win.maximize()
-    win.to_top()
-    win.activate()
-    while True:
-        if findgame():
-            print("Game window found")
-            where()
-        else:
-            print("Not found Game window.")
-            break
-
-
-    # except Exception as E:
-    #     print("Error",E)
+    try:
+        ahk.show_info_traytip("Starting", "loading files",second = 1,  slient=False, blocking=True)
+        configread()
+        parslist()
+        print("All file list is ready")    
+        ahk.show_info_traytip("started", "All files loaded successfully",second = 2,  slient=False, blocking=True)
+        findgame()
+        win.show()
+        win.restore()
+        win.maximize()
+        win.to_top()
+        win.maximize()
+        win.to_top()
+        win.activate()
+        while True:
+            if findgame():
+                #print("Game window found")
+                where()
+            else:
+                print("Not found Game window.")
+                break
+    except Exception as E:
+        print("Error",E)
 
 
 if __name__ == '__main__':
