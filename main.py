@@ -77,32 +77,22 @@ def configread():
 
     print(monik, speed, hero)
 
+def filepp(name,strname):
+    try:
+        i = 0
+        while i<len(name):
+            name[i] = strname + "/" + name[i] + ".png"
+            i+=1
+        print(strname, "file list is ready")
+    except:
+        print(strname, "file list got error")
 
 def parslist():
-    i = 0
-    while i < len(Ui_Ellements):
-        Ui_Ellements[i] = "UI_ellements/" + Ui_Ellements[i] + ".png"
-        i += 1
-    print("1 блок")
-    i = 0
-    while i < len(buttons):
-        buttons[i] = "buttons/" + buttons[i] + ".png"
-        i += 1
-    print("2 блок")
-    i = 0
-    while i < len(chekers):
-        chekers[i] = "chekers/" + chekers[i] + ".png"
-        i += 1
-    i = 0
-    print("3 блок")
-    while i < len(levels):
-        levels[i] = "levels/" + levels[i] + ".png"
-        i += 1
-    i = 0
-    print("4 блок")
-    while i < len(hero):
-        hero[i] = "heroes/" + hero[i]
-        i += 1
+    filepp(Ui_Ellements,"Ui_Ellements")
+    filepp(buttons,"Buttons")
+    filepp(chekers,"Chekers")
+    filepp(levels,"Levels")
+    filepp(hero,"Hero")
     return 0
 
 
@@ -122,17 +112,16 @@ def partscreen(x, y, top, left):
         sct_img = sct.grab(monitor)
         mss.tools.to_png(sct_img.rgb, sct_img.size, output='files/' + Resolution + '/part.png')
 
-
 def findgame():
     global win
-    win = ahk.win_get(title='Hearthstone')
+    try:
+        win = ahk.win_get(title='Hearthstone')
+    except:
+        print("Not found game.")
     if win.exist:
-        print("Игра найдена")
-        return True
+        return True  
     else:
-        print("Игра не найдена")
         return False
-
 
 def battlefind(file, coll):
     global sens
@@ -168,7 +157,6 @@ def battlefind(file, coll):
             enemywiz[i] = 0
         return 0
 
-
 def move(index):
     if index != (0, 0):
         ahk.mouse_drag(index[0] + 60, index[1] - 30, relative=False)
@@ -176,7 +164,6 @@ def move(index):
         return False
     else:
         return True
-
 
 def rand(enemyred, enemygreen, enemyblue, enemynoclass):
     while True:
@@ -424,15 +411,16 @@ def pagech(page, coll):
     if int(pages[coll]) > 1:
         if page != pages[coll]:
             find_ellement(Ui_Ellements[4], 0)
+            #if we found the next page
             time.sleep(1)
             page += 1
         else:
             while page != 1:
                 find_ellement(Ui_Ellements[10], 0)
+                #go to prev page
                 page -= 1
                 time.sleep(1)
     return page
-
 
 def find(n):
     change(n)
@@ -442,10 +430,11 @@ def find(n):
             for index in range(4):
                 if find_ellement(hero[n] + picparser[index], 6):
                     find_ellement(chekers[8], 0)
+                    #to find the "drop"
                     heroNUM[n] = picparser[index]
+                    #hero list(was empty) insert one lv30 hero
                     return True
         page = pagech(page, n)
-
 
 def change(index):
     if hero_colour[index] == 'Red':
@@ -462,8 +451,8 @@ def group_create():
     global left
     global top
     time.sleep(1)
-    if find_ellement(chekers[4], 3) == 6:
-        find_ellement(buttons[2], 0)
+    if find_ellement(chekers[4], 3) == 6:#group_find
+        find_ellement(buttons[2], 0)#create
         time.sleep(1.5)
         print(win.rect)
         x=int(win.rect[2] /1.3)
@@ -473,13 +462,17 @@ def group_create():
         ahk.click()
         temp = speed
         speed = 0
-        ahk.send_input('Botwork', 0)
+        ahk.send_input('Botwork')
+        #ahk.send_input('Botwork', 0)
+        #avoid input method editor interfering 
+
         find_ellement(Ui_Ellements[10], 0)
+        #to find the prev page
         find(0)
         find(1)
         find(2)
         speed = temp
-        find_ellement(buttons[8], 0)
+        find_ellement(buttons[8], 0)#ready
         find_ellement(Ui_Ellements[6], 2)
         group_create()
     else:
@@ -631,12 +624,12 @@ def find_ellement(file, index):
 
 
 def main():
-    ahk.show_info_traytip("Starting", "loading files", slient=False, blocking=True)
+    # try:
+    ahk.show_info_traytip("Starting", "loading files",second = 1,  slient=False, blocking=True)
     configread()
+    parslist()    
+    ahk.show_info_traytip("started", "All files loaded successfully",second = 2,  slient=False, blocking=True)
     findgame()
-    parslist()
-    ahk.show_info_traytip("started", "all files loaded successfully", slient=False, blocking=True)
-
     win.show()
     win.restore()
     win.maximize()
@@ -646,7 +639,16 @@ def main():
     win.activate()
     while True:
         if findgame():
+            print("Game window found")
             where()
+        else:
+            print("Not found Game window.")
+            break
+
+
+    # except Exception as E:
+    #     print("Error",E)
+
 
 if __name__ == '__main__':
     main()
