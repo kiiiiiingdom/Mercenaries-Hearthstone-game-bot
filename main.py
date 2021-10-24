@@ -605,7 +605,7 @@ def find_ellement(file, index):
             ahk.click()
             group_create()
     else:
-        #print("Not found  " + file)
+        print("Not found  " + file)
         if index == 12:
             return 0, 0
         if index == 6:
